@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sintatra-ingress
+  labels:
+    name: sintatra-ingress
+  annotations: 
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/sinatra"
+        backend:
+          service:
+            name: sinatra
+            port: 
+              number: 8080

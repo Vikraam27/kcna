@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: sinatra-with-vol
+  labels:
+    app.kubernetes.io/name: sinatra-pv
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sinatra-pv
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sinatra-pv
+    spec:
+      volumes: 
+        - name: my-pvc
+          persistentVolumeClaim:
+            claimName: my-pvc
+      containers:
+        - name: sinatra-pv
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "65Mi"
+              cpu: "50m"
+          image: ghcr.io/vikraam27/sinatra:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /mnt/local-data
+              name: my-pvc
+          ports:
+          - containerPort: 4567
+            name: http
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4567
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+
+
+

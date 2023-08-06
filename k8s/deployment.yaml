@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: sinatra
+  labels:
+    app.kubernetes.io/name: sinatra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sinatra
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sinatra
+    spec:
+      containers:
+        - name: sinatra
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "65Mi"
+              cpu: "50m"
+          # envFrom:
+          #   - configMapRef:
+          #       name: sinatra-cfg
+          envFrom:
+            - secretRef:
+                name: sinatra-basic-auth
+          image: ghcr.io/vikraam27/sinatra:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 4567
+            name: http
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4567
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+          volumeMounts:
+          - name: config
+            mountPath: "/config"
+            readOnly: true
+      volumes:
+      - name: config
+        configMap: 
+          name: sinatra-cfg
+
+

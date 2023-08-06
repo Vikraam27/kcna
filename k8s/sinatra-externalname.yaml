@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: covid19-page
+spec:
+  type: ExternalName
+  externalName: ecstatic-wing-537334.netlify.app
+  
